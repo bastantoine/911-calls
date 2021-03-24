@@ -31,8 +31,52 @@ Afin de répondre aux différents problèmes, vous allez avoir besoin de créer 
 
 À vous de jouer ! Écrivez les requêtes MongoDB permettant de résoudre les problèmes posés.
 
+Question 1 :
+```javascript
+db.calls.aggregate({$group : { _id : '$type', count : {$sum : 1}}})
 ```
-TODO : ajouter les requêtes MongoDB ici
+
+Question 2 :
+```javascript
+db.calls.aggregate([
+  {
+    $group : {
+      _id: { $concat: ['$time.date.month',  '/', '$time.date.year'] },
+      count : {$sum : 1}
+    }
+  },
+  { $sort : {count : -1} },
+  { $limit: 3 }
+])
+```
+
+Question 3 :
+```javascript
+db.calls.aggregate([
+  { $match : { title : "OVERDOSE" } },
+  { $group: {
+    _id : '$township',
+    count : {$sum : 1}
+  }},
+  { $sort : {count : -1} },
+  { $limit: 3 }
+])
+```
+
+Question 4 :
+```javascript
+db.calls.createIndex({location : "2dsphere"})
+db.calls.find({
+  location: {
+    $near: {
+      $geometry: {
+        type: "Point",
+        coordinates: [-75.283783, 40.241493]
+      },
+      $maxDistance : 500
+    }
+  }
+}).count()
 ```
 
 Vous allez sûrement avoir besoin de vous inspirer des points suivants de la documentation :
