@@ -20,8 +20,34 @@ const insertCalls = async function (db, callback) {
     .pipe(csv())
     .on('data', data => {
 
+      const titleSplited = data.title.split(': ');
+      const timeStampSplited = data.timeStamp.split(' ');
+      const dateSplited = timeStampSplited[0].split('-');
+      const timeSplited = timeStampSplited[1].split(':');
+
       const call = {
-      }; // TODO créer l'objet call à partir de la ligne
+        "latitude": data.lat,
+        "longitude": data.lng,
+        "location": {type: "Point", coordinates: [parseFloat(data.lng), parseFloat(data.lat)]},
+        "description": data.desc,
+        "postalCode": data.zip,
+        "type": titleSplited[0],
+        "title": titleSplited[1],
+        "time": {
+          "date": {
+            "day": dateSplited[2],
+            "month": dateSplited[1],
+            "year": dateSplited[0]
+          },
+          "time": {
+            "hour": timeSplited[0],
+            "minutes": timeSplited[1],
+            "seconds": timeSplited[2],
+          }
+        },
+        "township": data.twp,
+        "address": data.addr
+      };
 
       calls.push(call);
     })
